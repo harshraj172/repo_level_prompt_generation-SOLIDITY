@@ -20,6 +20,7 @@ git clone https://github.com/para-space/paraspace-core
 
 ### Preprocessing Data --> Generating prompts --> storing CODEX output  
 Run the bash script to get all the necessary scripts to run at once. 
+**Note:** Add your openaiapi_key in the `--openaiapi_key` argument of `evaluate_prompt.py` when called from `job.sh`.  
 ```
 bash job.sh
 ```
