@@ -2,16 +2,59 @@ import os
 base_data_dir = 'gcode-data'
 
 projects = { 'train': [
-                      'paraspace-core',
-                      'DeFiHackLabs',
+                      'gfsfa',
+                      'sol-agent-platform',
+                      'gloodb',
+                      'rsbotownversion',
+                      'jjskit',
+                      'ftpserverremoteadmin', 
+                      'openprocesslogger', 
+                      'strudem-sicsa',
+                      'seamlets', 
+                      'healpix-rangeset', 
+                      'quidsee', 
+                      'mobileexpensetracker', 
+                      'swe574-group3', 
+                      'largemail', 
+                      'soap-dtc', 
+                      'designpatternjavapedro', 
+                      'myt5lib', 
+                      'exogdx', 
+                      'tapestry-sesame'
                       ], 
 
               'val': [
-                      'ERC721A', 
+                      'javasummerframework', 
+                      'tinwiki',
+                      'teammates-shakthi',
+                      'jcontenedor', 
+                      'jloogle', 
+                      'swinagile', 
+                      'math-mech-eshop', 
+                      'jata4test', 
+                      'affinity_propagation_java', 
+                      'navigablep2p', 
+                      'springlime', 
+                      'sohocms', 
+                      'tyrond', 
+                      'infinispan-storage-service', 
                       ],
 
               'test': [
-                      'solmate',
+                        'project-pt-diaoc',
+                        'dovetaildb',
+                        'robotsimulator2009w',
+                        'ircrpgbot',
+                        'xfuze',
+                        'realtimegc',
+                        'fswuniceubtemplates', 
+                        'glperaudsimon',
+                        'apiitfriends',
+                        'qwikioffice-java', 
+                        'xiaonei-java-api', 
+                        'wicketbits', 
+                        'hucourses', 
+                        'gwt-plugindetect'
                       ] 
             }
 

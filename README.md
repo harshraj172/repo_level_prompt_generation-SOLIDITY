@@ -2,6 +2,9 @@
 ```
 pip install tree-sitter
 pip install tqdm 
+pip install openai 
+
+git clone https://github.com/JoranHonig/tree-sitter-solidity.git
 ```
 
 ## Code
