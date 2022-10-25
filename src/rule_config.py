@@ -2,21 +2,21 @@
 # context_location and context_type define a rule
 context_location = [
                     'in_file', \
-                    'parent_class_file', \
+                    'parent_contract_file', \
                     'import_file',\
                     'sibling_file', \
                     'similar_name_file', \
-                    'child_class_file', \
+                    'child_contract_file', \
                     'import_of_sibling_file', \
                     'import_of_similar_name_file', \
-                    'import_of_parent_class_file', \
-                    'import_of_child_class_file'
+                    'import_of_parent_contract_file', \
+                    'import_of_child_contract_file'
                     ]
 
 
 all_context_types = [ 
-                      'method_names_and_bodies',\
-                      'method_names',\
+                      'function_names_and_bodies',\
+                      'function_names',\
                       'identifiers', \
                       'type_identifiers',\
                       'string_literals',\
@@ -49,7 +49,7 @@ rule_hyperparams = {
                     'top_k': [-1],
                     'prompt_separator': ['newline'],
                     'top_k_type':['first'],
-                    'rule_context_formatting':['class_name']
+                    'rule_context_formatting':['contract_name']
                     },
 
                     'type_identifiers':
@@ -58,7 +58,7 @@ rule_hyperparams = {
                     'top_k': [-1],
                     'prompt_separator': ['newline'],
                     'top_k_type':['first'],
-                    'rule_context_formatting':['class_name']
+                    'rule_context_formatting':['contract_name']
                     },
 
                     'string_literals':
@@ -67,16 +67,16 @@ rule_hyperparams = {
                     'top_k': [-1],
                     'prompt_separator': ['newline'],
                     'top_k_type':['first'],
-                    'rule_context_formatting':['class_name']
+                    'rule_context_formatting':['contract_name']
                     },
 
-                    'method_names':
+                    'function_names':
                     {
                     'context_ratio': [0.5],
                     'top_k': [-1],
                     'prompt_separator': ['newline'],
                     'top_k_type':['first'],
-                    'rule_context_formatting':['class_name']
+                    'rule_context_formatting':['contract_name']
                     },
 
                     'field_declarations':
@@ -85,16 +85,16 @@ rule_hyperparams = {
                     'top_k': [-1],
                     'prompt_separator': ['newline'],
                     'top_k_type':['first'],
-                    'rule_context_formatting':['class_name']
+                    'rule_context_formatting':['contract_name']
                     },
 
-                    'method_names_and_bodies':
+                    'function_names_and_bodies':
                     {
                     'context_ratio': [0.5],
                     'top_k': [-1],
                     'prompt_separator': ['newline'],
                     'top_k_type':['first'],
-                    'rule_context_formatting':['class_method_name']
+                    'rule_context_formatting':['contract_function_name']
                     }
 
 

@@ -28,7 +28,7 @@ class getContext():
       self.file_lines = open(file, encoding="utf8", errors='backslashreplace').readlines()
     if self.context_location == 'in_file':
       self.set_context_scope_and_inclusion_type(context_scope)
-    elif self.context_location == 'parent_class_file':
+    elif self.context_location == 'parent_contract_file':
       self.codex_completion_inclusion_type = 'back'
     else:
       self.import_overlap_type_files = {}
@@ -42,16 +42,16 @@ class getContext():
       return False
 
   def is_out_files(self):
-    if self.context_location == 'parent_class_file' or self.context_location == 'import_of_parent_class_file':
-      return self.is_non_empty('parent_class_filenames')
+    if self.context_location == 'parent_contract_file' or self.context_location == 'import_of_parent_contract_file':
+      return self.is_non_empty('parent_contract_filenames')
     if self.context_location == 'import_file':
       return self.is_non_empty('imports')
     if self.context_location == 'sibling_file' or self.context_location == 'reverse_sibling_file' or self.context_location == 'import_of_sibling_file':
       return self.is_non_empty('sibling_files')
     if self.context_location == 'similar_name_file' or self.context_location == 'reverse_similar_name_file' or self.context_location == 'import_of_similar_name_file':
       return self.is_non_empty('similar_name_files')
-    if self.context_location == 'child_class_file' or self.context_location == 'import_of_child_class_file':
-      return self.is_non_empty('child_class_filenames')
+    if self.context_location == 'child_contract_file' or self.context_location == 'import_of_child_contract_file':
+      return self.is_non_empty('child_contract_filenames')
 
   def set_context_scope_and_inclusion_type(self, new_scope):
     self.context_scope = new_scope
@@ -76,30 +76,30 @@ class getContext():
     if self.rule_context_formatting == 'newline':
       context = "\n".join(lst)
 
-    if self.rule_context_formatting == 'method_name'\
-    or self.rule_context_formatting == 'class_name'\
-    or self.rule_context_formatting == 'class_method_name':
+    if self.rule_context_formatting == 'function_name'\
+    or self.rule_context_formatting == 'contract_name'\
+    or self.rule_context_formatting == 'contract_function_name':
       context = " ".join(lst)
 
     if self.rule_context_formatting == 'comment':
       context = " ".join(lst)
-      context = "/**" + context + "*/"
+      context = "/*" + context + "*/"
 
     return context
 
-  def get_nearest_attribute_index(self, attribute_names, type='class'):
+  def get_nearest_attribute_index(self, attribute_names, type='contract'):
     hole_start_line = self.hole_pos[0]
     min_pos_diff = 100000
     min_pos_diff_index = -1
     for i in range(len(attribute_names)):
       if attribute_names[i]:
         attribute_start_line = attribute_names[i][0][0]
-        if type == 'class':
+        if type == 'contract':
           pos_diff = hole_start_line - attribute_start_line
         if type == 'import':
           pos_diff = np.abs(hole_start_line - attribute_start_line)
         if pos_diff < min_pos_diff:
-          if type == 'class':
+          if type == 'contract':
             if pos_diff > 0:
               min_pos_diff = pos_diff
               min_pos_diff_index = i
@@ -108,7 +108,7 @@ class getContext():
             if pos_diff != 0 or (pos_diff == 0 and attribute_names[i][1][1] < self.hole_pos[1]):
               min_pos_diff = pos_diff
               min_pos_diff_index = i
-    if type == 'class':
+    if type == 'contract':
       return min_pos_diff_index
     if type == 'import':
       return pos_diff
@@ -181,56 +181,55 @@ class getContext():
     self.import_overlap_type_files[imp_file] = sorted_type_files
     return sorted_type_files
 
-  def get_parent_class_filename(self):
+  def get_parent_contract_filename(self):
     """
-    Return the parent class filename that corresponds to the immediate scope of the hole location
+    Return the parent contract filename that corresponds to the immediate scope of the hole location
     """
     file_parsed_data = self.parse_data[self.file]
-    parent_class_filenames = file_parsed_data['parent_class_filenames']
-    parent_class_names = file_parsed_data['parent_class_names']
-    relevant_index = self.get_nearest_attribute_index(parent_class_names)
+    parent_contract_filenames = file_parsed_data['parent_contract_filenames']
+    parent_contract_names = file_parsed_data['parent_contract_names']
+    relevant_index = self.get_nearest_attribute_index(parent_contract_names)
     if relevant_index != -1:
-      return parent_class_filenames[relevant_index][0], parent_class_names[relevant_index]
+      return parent_contract_filenames[relevant_index][0], parent_contract_names[relevant_index]
     else:
       return '', ''
 
-  def get_method_names_and_bodies(self, method_names, method_bodies, file):
-
-    if self.top_k != -1 and len(method_names) >= self.top_k:
-      method_context_len = int(self.context_len/self.top_k)
+  def get_function_names_and_bodies(self, function_names, function_bodies, file):
+    if self.top_k != -1 and len(function_names) >= self.top_k:
+      function_context_len = int(self.context_len/self.top_k)
     else:
-      method_context_len = int(self.context_len/len(method_names))
+      function_context_len = int(self.context_len/len(function_names))
 
-    method_contexts = []
+    function_contexts = []
     context_len = 0
-    for method_name in method_names:
-      if method_name:
+    for function_name in function_names:
+      if function_name:
         found = False
-        for method_body in method_bodies:
-          # for each method name, find the corresponding method_body
-          if method_body and method_body[0][0] == method_name[0][0]:
-            ms, me = method_body
+        for function_body in function_bodies:
+          # for each function name, find the corresponding function_body
+          if function_body and function_body[0][0] == function_name[0][0]:
+            ms, me = function_body
             full_ms = (ms[0], 0)
             full_me = me
             found = True
             break
 
         if found == False:
-          ms, me = method_name
+          ms, me = function_name
           full_ms = (ms[0], 0)
           full_me = (ms[0], -1)
 
-        method_name_and_body = get_string(file, full_ms, full_me)
-        method_context, method_context_len = get_codex_tokenized_string(self.tokenizer, method_name_and_body, \
-                                        method_context_len)
-        if self.rule_context_formatting == 'method_name'\
-        or self.rule_context_formatting =='class_method_name':
-          method_name_str = "[" + get_string(file, method_name[0], method_name[1]) + "]"
-          method_contexts.append(method_name_str)
-        method_contexts.append(method_context)
-        context_len += method_context_len
+        function_name_and_body = get_string(file, full_ms, full_me)
+        function_context, function_context_len = get_codex_tokenized_string(self.tokenizer, function_name_and_body, \
+                                        function_context_len)
+        if self.rule_context_formatting == 'function_name'\
+        or self.rule_context_formatting =='contract_function_name':
+          function_name_str = "[" + get_string(file, function_name[0], function_name[1]) + "]"
+          function_contexts.append(function_name_str)
+        function_contexts.append(function_context)
+        context_len += function_context_len
 
-    context = self.get_rule_context_format(method_contexts)
+    context = self.get_rule_context_format(function_contexts)
     return context, context_len
 
   def get_context_string(self, candidate_attributes):
@@ -328,11 +327,11 @@ class getContext():
     return context, context_len
 
   def get_base_context(self):
-    base_class_names = self.parse_data[self.file]['class_names']
-    class_index = self.get_nearest_attribute_index(base_class_names)
-    if class_index != -1:
-      base_class_name = get_string(self.file, base_class_names[class_index][0], base_class_names[class_index][1])
-      base_context = "[" + base_class_name + "]"
+    base_contract_names = self.parse_data[self.file]['contract_names']
+    contract_index = self.get_nearest_attribute_index(base_contract_names)
+    if contract_index != -1:
+      base_contract_name = get_string(self.file, base_contract_names[contract_index][0], base_contract_names[contract_index][1])
+      base_context = "[" + base_contract_name + "]"
     else:
       base_context = ''
     return base_context
@@ -349,14 +348,14 @@ class getContext():
     if self.context_type == 'string_literals':
       context, context_len = self.get_attribute_context(self.parse_data[file_type]['string_literals'], file_type)
 
-    if self.context_type == 'method_names':
-      context, context_len = self.get_attribute_context(self.parse_data[file_type]['all_method_names'], file_type)
+    if self.context_type == 'function_names':
+      context, context_len = self.get_attribute_context(self.parse_data[file_type]['all_function_names'], file_type)
 
-    if self.context_type == 'method_names_and_bodies':
-      method_names = self.parse_data[file_type]['all_method_names']
-      method_bodies = self.parse_data[file_type]['all_method_bodies']
-      if method_names:
-        context, context_len = self.get_method_names_and_bodies(method_names, method_bodies, file_type)
+    if self.context_type == 'function_names_and_bodies':
+      function_names = self.parse_data[file_type]['all_function_names']
+      function_bodies = self.parse_data[file_type]['all_function_bodies']
+      if function_names:
+        context, context_len = self.get_function_names_and_bodies(function_names, function_bodies, file_type)
       else:
         context= ''
         context_len = 0
@@ -372,7 +371,7 @@ class getContext():
     if files:
       for file in files:
         if total_context_len < self.get_context_len():
-          if self.rule_context_formatting == 'class_name' or self.rule_context_formatting == 'class_method_name':
+          if self.rule_context_formatting == 'contract_name' or self.rule_context_formatting == 'contract_function_name':
             base_context = self.get_base_context()
             file_name = file.split('/')[-1].split('.')[0]
             file_name = "[" + file_name + "]"
@@ -380,7 +379,7 @@ class getContext():
           context, context_len = self.get_attribute_context_from_context_type(file)
 
           # import contexts are added to the front based on decreasing priority
-          if self.rule_context_formatting == 'class_name' or self.rule_context_formatting == 'class_method_name':
+          if self.rule_context_formatting == 'contract_name' or self.rule_context_formatting == 'contract_function_name':
             total_context = file_name + " " + context + " " + total_context
           else:
             total_context = context + " " + total_context
@@ -388,7 +387,7 @@ class getContext():
         else:
           break
 
-      if self.rule_context_formatting == 'class_name' or self.rule_context_formatting == 'class_method_name':
+      if self.rule_context_formatting == 'contract_name' or self.rule_context_formatting == 'contract_function_name':
         total_context = total_context + "\n" + base_context
     return total_context, total_context_len
 
@@ -423,12 +422,12 @@ class getContext():
         self.set_context_scope_and_inclusion_type('pre_post')
         context, context_len = self.get_attribute_context(self.parse_data[self.file]['string_literals'], self.file)
 
-    if self.context_type == 'method_names':
+    if self.context_type == 'function_names':
       self.set_context_scope_and_inclusion_type('post')
-      context, context_len = self.get_attribute_context(self.parse_data[self.file]['all_method_names'], self.file)
+      context, context_len = self.get_attribute_context(self.parse_data[self.file]['all_function_names'], self.file)
       if not context:
         self.set_context_scope_and_inclusion_type('pre_post')
-        context, context_len = self.get_attribute_context(self.parse_data[self.file]['all_method_names'], self.file)
+        context, context_len = self.get_attribute_context(self.parse_data[self.file]['all_function_names'], self.file)
 
     if self.context_type == 'field_declarations':
       self.set_context_scope_and_inclusion_type('post')
@@ -439,16 +438,16 @@ class getContext():
 
     return context, context_len
 
-  def get_parent_class_file_context(self):
-    self.parent_class_file, self.parent_class_name = self.get_parent_class_filename()
-    if self.parent_class_file:
-      if self.rule_context_formatting == 'class_name' or self.rule_context_formatting == 'class_method_name':
+  def get_parent_contract_file_context(self):
+    self.parent_contract_file, self.parent_contract_name = self.get_parent_contract_filename()
+    if self.parent_contract_file:
+      if self.rule_context_formatting == 'contract_name' or self.rule_context_formatting == 'contract_function_name':
         base_context = self.get_base_context()
-        parent_class_name = get_string(self.file, self.parent_class_name[0], self.parent_class_name[1])
-        parent_context = "[" + parent_class_name + "]"
+        parent_contract_name = get_string(self.file, self.parent_contract_name[0], self.parent_contract_name[1])
+        parent_context = "[" + parent_contract_name + "]"
       # get context
-      context, context_len = self.get_attribute_context_from_context_type(self.parent_class_file)
-      if self.rule_context_formatting == 'class_name' or self.rule_context_formatting == 'class_method_name':
+      context, context_len = self.get_attribute_context_from_context_type(self.parent_contract_file)
+      if self.rule_context_formatting == 'contract_name' or self.rule_context_formatting == 'contract_function_name':
         context = parent_context + " " + context + "\n" + base_context
     else:
       context = ''
@@ -476,9 +475,9 @@ class getContext():
     similar_name_files = self.get_relevant_files(type_str='similar_name_files', sort_order=sort_order)
     return self.get_context_from_multiple_files(similar_name_files)
 
-  def get_child_class_file_context(self):
-    child_class_files = self.get_relevant_files(type_str='child_class_filenames')
-    return self.get_context_from_multiple_files(child_class_files)
+  def get_child_contract_file_context(self):
+    child_contract_files = self.get_relevant_files(type_str='child_contract_filenames')
+    return self.get_context_from_multiple_files(child_contract_files)
 
   def get_import_of_sibling_file_context(self):
     imports_of_sibling_files = self.get_relevant_import_of_att_files('sibling_files')
@@ -488,10 +487,10 @@ class getContext():
     imports_of_similar_name_files = self.get_relevant_import_of_att_files('similar_name_files')
     return self.get_context_from_multiple_files(imports_of_similar_name_files)
 
-  def get_import_of_parent_class_file_context(self):
-    imports_of_parent_class_files = self.get_relevant_import_of_att_files('parent_class_filenames')
-    return self.get_context_from_multiple_files(imports_of_parent_class_files)
+  def get_import_of_parent_contract_file_context(self):
+    imports_of_parent_contract_files = self.get_relevant_import_of_att_files('parent_contract_filenames')
+    return self.get_context_from_multiple_files(imports_of_parent_contract_files)
 
-  def get_import_of_child_class_file_context(self):
-    imports_of_child_class_files = self.get_relevant_import_of_att_files('child_class_filenames')
-    return self.get_context_from_multiple_files(imports_of_child_class_files)
+  def get_import_of_child_contract_file_context(self):
+    imports_of_child_contract_files = self.get_relevant_import_of_att_files('child_contract_filenames')
+    return self.get_context_from_multiple_files(imports_of_child_contract_files)

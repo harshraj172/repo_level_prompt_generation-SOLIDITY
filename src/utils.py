@@ -4,28 +4,28 @@ from rule_config import *
 
 promptseparator2str = {'space': " ", \
                         'newline': "\n", \
-                        'class_names': "class_names",\
-                        'class_method_names': "class_method_names",\
-                        'method_names': "method_names"}
+                        'contract_names': "contract_names",\
+                        'contract_function_names': "contract_function_names",\
+                        'function_names': "function_names"}
 
 context_location_to_index = {
                     'in_file':0, \
-                    'parent_class_file':1, \
+                    'parent_contract_file':1, \
                     'import_file':2,\
                     'sibling_file':3, \
                     'similar_name_file':4, \
-                    'child_class_file':5, \
+                    'child_contract_file':5, \
                     'import_of_sibling_file':6, \
                     'import_of_similar_name_file':7, \
-                    'import_of_parent_class_file':8, \
-                    'import_of_child_class_file':9, \
+                    'import_of_parent_contract_file':8, \
+                    'import_of_child_contract_file':9, \
                     'codex': 10 #codex
                     }
 
 
 context_types_to_index = {
-                      'method_names_and_bodies':0,\
-                      'method_names':1,\
+                      'function_names_and_bodies':0,\
+                      'function_names':1,\
                       'identifiers':2, \
                       'type_identifiers':3,\
                       'string_literals':4,\
@@ -86,10 +86,10 @@ def find_intersection(lst1, lst2):
 def alter_hid(orig_hid, hid):
   data_split = hid.split('/')[1]
   if 'gcode-data' in orig_hid:
-    new_id = orig_hid.replace('data/gcode-data', 'rule_classifier_data/' + data_split)
+    new_id = orig_hid.replace('data/gcode-data', 'rule_contractifier_data/' + data_split)
     return new_id
   elif 'java-other' in orig_hid:
-    new_id = orig_hid.replace('data/java-other', 'rule_classifier_data/' + data_split)
+    new_id = orig_hid.replace('data/java-other', 'rule_contractifier_data/' + data_split)
     return new_id
   else:
     return orig_hid

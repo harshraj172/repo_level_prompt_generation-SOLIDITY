@@ -32,7 +32,7 @@ class RuleReprDataset(Dataset):
         if f == 'duplicates':
           duplicate_files = open(os.path.join(dp, f), 'r').readlines()
           all_duplicate_files.extend([x.strip() for x in duplicate_files]) 
-        if os.path.splitext(f)[1] == '.java':          
+        if os.path.splitext(f)[1] == '.sol':          
           files.append(os.path.join(dp, f))
     print(len(all_duplicate_files))
     self.holes = []
@@ -113,7 +113,7 @@ class RuleReprDataset(Dataset):
   def get_rule_context(self, file, hole_pos):
     self.is_clear_cache() 
     rule_dataset_util = RuleDatasetUtils(file, self.parse_datas, hole_pos, self.tokenizer)
-    rule_prompts, rule_indexes = rule_dataset_util.get_all_rules_context()
+    rule_prompts_dct_lst, rule_prompts, rule_indexes = rule_dataset_util.get_all_rules_context()
     rule_contexts = self.tokenizer(rule_prompts, truncation=True, padding='max_length')
     rule_inputs = torch.tensor(rule_contexts['input_ids'])
     rule_masks = torch.tensor(rule_contexts['attention_mask'])
@@ -125,6 +125,7 @@ class RuleReprDataset(Dataset):
     filtered_rule_mask = []
     filtered_rule_prompts = []
     filtered_rule_indexes = []
+    filtered_rule_prompts_dct_lst = []
     for i in range(len(rule_prompts)):
       rule_prompt = rule_prompts[i]
       if rule_prompt not in self.rule_repr_cache:
@@ -132,16 +133,17 @@ class RuleReprDataset(Dataset):
         filtered_rule_context.append(rule_inputs[i])
         filtered_rule_mask.append(rule_masks[i])
         filtered_rule_prompts.append(rule_prompt)
+        filtered_rule_prompts_dct_lst.append(rule_prompts_dct_lst[i])
 
-    if filtered_rule_context:
-      filtered_rule_context = torch.stack(filtered_rule_context)
-      filtered_rule_mask = torch.stack(filtered_rule_mask)
+#     if filtered_rule_context:
+#       filtered_rule_context = torch.stack(filtered_rule_context)
+#       filtered_rule_mask = torch.stack(filtered_rule_mask)
 
       # get rule representations
-      filtered_representations = self.get_context_embedding(filtered_rule_context, filtered_rule_mask)
+      # filtered_representations = self.get_context_embedding(filtered_rule_context, filtered_rule_mask)
       # cache the representations
-      for i in range(len(filtered_representations)):
-        f_repr = filtered_representations[i]
+      for i in range(len(filtered_rule_context)):
+        f_repr = filtered_rule_context[i]
         rule_prompt = filtered_rule_prompts[i]
         self.rule_repr_cache[rule_prompt] = f_repr
 
@@ -151,15 +153,15 @@ class RuleReprDataset(Dataset):
     for ind in range(self.num_rules):
       if ind in rule_indexes:
         prompt = rule_prompts[j]
-        j+=1
         if prompt in self.rule_repr_cache:
-          keys.append(self.rule_repr_cache[prompt])
-        else:
-          keys.append(torch.zeros(self.repr_size))
-      else:
-        keys.append(torch.zeros(self.repr_size))
-
-    keys = torch.stack(keys)
+          keys.append(rule_prompts_dct_lst[j])
+          j+=1
+      #   else:
+      #     keys.append({'no rule': [0]*(self.repr_size)})
+      # else:
+      #   keys.append({'no rule': [0]*(self.repr_size)})
+        
+#     keys = torch.stack(keys)
     return keys
   
   def generate_data(self, hole):
@@ -204,5 +206,3 @@ def set_tokenizer(emb_model_type):
     tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
     tokenizer.pad_token = tokenizer.eos_token
   return tokenizer
-
-

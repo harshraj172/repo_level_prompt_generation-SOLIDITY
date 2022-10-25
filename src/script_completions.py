@@ -9,15 +9,15 @@ base_dirs = os.listdir('rule_classifier_data')
 modes = ['codex', 'rule']
 context_locations = [
                      'in_file', \
-                      'parent_class_file', \
-                      'import_file',\
+                     'parent_contract_file', \
+                     'import_file',\
                      'sibling_file', \
                      'similar_name_file', \
-                     'child_class_file', \
+                     'child_contract_file', \
                      'import_of_sibling_file', \
                      'import_of_similar_name_file', \
-                     'import_of_parent_class_file', \
-                     'import_of_child_class_file'
+                     'import_of_parent_contract_file', \
+                     'import_of_child_contract_file'
                     ]
 
 

@@ -5,15 +5,15 @@ from transformers import GPT2TokenizerFast
 
 context_location_conversion = {
                     'in_file':'in_file', \
-                    'parent_class_file':'parent_class_file', \
+                    'parent_contract_file':'parent_contract_file', \
                     'import_file':'import_file',\
                     'sibling_file':'sibling_files', \
                     'similar_name_file':'similar_name_files', \
-                    'child_class_file':'child_class_filenames', \
+                    'child_contract_file':'child_contract_filenames', \
                     'import_of_sibling_file':'sibling_files', \
                     'import_of_similar_name_file':'similar_name_files', \
-                    'import_of_parent_class_file':'parent_class_filenames', \
-                    'import_of_child_class_file':'child_class_filenames'
+                    'import_of_parent_contract_file':'parent_contract_filenames', \
+                    'import_of_child_contract_file':'child_contract_filenames'
                     }
 
 
@@ -34,8 +34,8 @@ class RuleDatasetUtils():
       rule_context_obj = getContext(context_location = context_location, file=self.file, parse_data = self.parse_datas)
       rule_context_obj.set_hole_pos(self.hole_pos)
       if rule_context_obj.is_out_files():
-        if context_location == 'parent_class_file':
-          relevant_file, _ = rule_context_obj.get_parent_class_filename()
+        if context_location == 'parent_contract_file':
+          relevant_file, _ = rule_context_obj.get_parent_contract_filename()
           relevant_files = []
         elif context_location == 'import_file':
           relevant_files = rule_context_obj.get_relevant_import_files()
@@ -82,11 +82,11 @@ class RuleDatasetUtils():
 
 
   def get_all_rules_context(self, num_of_lines_to_exclude=0):
+    rule_prompts_dct_lst = []
     rule_prompts = []
     rule_indexes = []
     total_context_len = self.tokenizer.model_max_length
     
-
     for key, val in combined_to_index.items():
       rule_prompt = ''
       if key == 'codex':
@@ -108,30 +108,31 @@ class RuleDatasetUtils():
         # there are files for this context location except in_file context location
         is_out_files = rule_context_obj.is_out_files() 
         if is_out_files:
-          if context_location == 'parent_class_file':
-            rule_prompt, rule_prompt_len = rule_context_obj.get_parent_class_file_context()
+          if context_location == 'parent_contract_file':
+            rule_prompt, rule_prompt_len = rule_context_obj.get_parent_contract_file_context()
           if context_location == 'import_file':
             rule_prompt, rule_prompt_len = rule_context_obj.get_import_file_context()
           if context_location == 'sibling_file':
             rule_prompt, rule_prompt_len = rule_context_obj.get_sibling_file_context()
           if context_location == 'similar_name_file':
             rule_prompt, rule_prompt_len = rule_context_obj.get_similar_name_file_context()
-          if context_location == 'child_class_file':
-            rule_prompt, rule_prompt_len = rule_context_obj.get_child_class_file_context()
+          if context_location == 'child_contract_file':
+            rule_prompt, rule_prompt_len = rule_context_obj.get_child_contract_file_context()
           if context_location == 'import_of_similar_name_file':
             rule_prompt, rule_prompt_len = rule_context_obj.get_import_of_similar_name_file_context()
-          if context_location == 'import_of_parent_class_file':
-            rule_prompt, rule_prompt_len = rule_context_obj.get_import_of_parent_class_file_context()
-          if context_location == 'import_of_child_class_file':
-            rule_prompt, rule_prompt_len = rule_context_obj.get_import_of_child_class_file_context()
+          if context_location == 'import_of_parent_contract_file':
+            rule_prompt, rule_prompt_len = rule_context_obj.get_import_of_parent_contract_file_context()
+          if context_location == 'import_of_child_contract_file':
+            rule_prompt, rule_prompt_len = rule_context_obj.get_import_of_child_contract_file_context()
           if context_location == 'import_of_sibling_file':
             rule_prompt, rule_prompt_len = rule_context_obj.get_import_of_sibling_file_context()
-
+      
       if rule_prompt:
+        rule_prompts_dct_lst.append({key: rule_prompt})
         rule_prompts.append(rule_prompt)
         rule_indexes.append(val)
 
-    return rule_prompts, rule_indexes
+    return rule_prompts_dct_lst, rule_prompts, rule_indexes
 
 
 

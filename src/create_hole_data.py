@@ -2,7 +2,7 @@ import numpy as np
 import os
 import argparse
 import pickle
-import javac_parser
+# import javac_parser
 import shutil
 
 
@@ -32,12 +32,13 @@ def choose_holes(project_lines, comments):
       #get holes from the middle of the lines
       mid_point = int(len(line)/2)
       chosen_position = mid_point
-
+      
       if file in data:
         data[file].append((file_line_id, chosen_position))
       else:
         data[file] = [(file_line_id, chosen_position)]
-
+      print(data)
+      break
   #total number of holes, #number of repeated holes, number of relevant lines, number of files
   return data, len(chosen_lines), len(data)
 
@@ -48,12 +49,12 @@ def setup_args():
   parser = argparse.ArgumentParser()
 
   parser.add_argument("--seed", type=int, default=9, help="seed for reproducibility")
-  parser.add_argument("--base_dir", type=str, default='gcode-data', \
+  parser.add_argument("--base_dir", type=str, default='./data', \
                             help="base directory for the data")
   parser.add_argument("--data_split", type=str, default='train', \
                             help="data split to store the data")
-  parser.add_argument("--language", type=str, default='java', help="java, cpp")
-  parser.add_argument("--proj_name", type=str, default='javasummerframework', \
+  parser.add_argument("--language", type=str, default='sol', help="java, cpp, sol")
+  parser.add_argument("--proj_name", type=str, default='solmate', \
                             help="name of the input repo")
 
   return parser.parse_args()
@@ -74,6 +75,9 @@ if __name__ == '__main__':
     comments = ['--']
   if args.language == 'cpp':
     file_extensions == ['.cc', '.cpp', '.h']
+    comments = ['/']
+  if args.language == 'sol':
+    file_extensions = ['.sol']
     comments = ['/']
 
   source_data_path = os.path.join(args.base_dir, args.proj_name)

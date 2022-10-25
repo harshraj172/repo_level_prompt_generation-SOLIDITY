@@ -34,7 +34,7 @@ def check_for_duplicates(paths, hash=hashlib.sha1):
     for path in paths:
         for dirpath, dirnames, filenames in os.walk(path):
             for filename in filenames:
-              if os.path.splitext(filename)[1] == '.java':
+              if os.path.splitext(filename)[1] == '.sol':
                 full_path = os.path.join(dirpath, filename)
                 hashobj = hash()
                 for chunk in chunk_reader(open(full_path, 'rb')):
@@ -76,7 +76,7 @@ def setup_args():
   parser.add_argument("--seed", type=int, default=9, help="seed for reproducibility")
   parser.add_argument("--base_dir", type=str, default='rule_classifier_data/val', \
                             help="base directory for the data")
-  parser.add_argument("--proj_name", type=str, default='rsbotownversion', \
+  parser.add_argument("--proj_name", type=str, default='solmate', \
                             help="name of the input repo")
 
   return parser.parse_args()
