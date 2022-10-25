@@ -9,11 +9,18 @@ git clone https://github.com/JoranHonig/tree-sitter-solidity.git
 
 ## Code
 ### Data
-An [example repo](https://github.com/para-space/paraspace-core) has been added to the data folder.
+**Example**: 
+- Create a empty <ins>./data</ins> folder and clone below [paraspace](https://github.com/para-space/paraspace-core).
+
+**Use the below command:**
+```
+cd ./data
+git clone https://github.com/para-space/paraspace-core
+```
 
 ### Preprocessing Data --> Generating prompts --> storing CODEX output  
-
+Run the bash script to get all the necessary scripts to run at once. 
 ```
 bash job.sh
 ```
-Download the .csv file generated to analyze the results.
+- Now Download the .csv file generated to analyze the results.

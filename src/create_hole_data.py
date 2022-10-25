@@ -32,13 +32,12 @@ def choose_holes(project_lines, comments):
       #get holes from the middle of the lines
       mid_point = int(len(line)/2)
       chosen_position = mid_point
-      
+
       if file in data:
         data[file].append((file_line_id, chosen_position))
       else:
         data[file] = [(file_line_id, chosen_position)]
-      print(data)
-      break
+
   #total number of holes, #number of repeated holes, number of relevant lines, number of files
   return data, len(chosen_lines), len(data)
 

@@ -28,6 +28,7 @@ def setup_args():
   # model related hyperparameters
   parser.add_argument("--emb_model_type", type=str, default='codebert', help="model to obtain embedding from")
   parser.add_argument("--repo", type=str, default='jata4test', help="model to obtain embedding from")
+  parser.add_argument("--num_examples_to_test", default=15, help="# of samples to take for testing")
   return parser.parse_args()
 
 def get_target_hole(hole_info):
@@ -66,6 +67,7 @@ if __name__ == '__main__':
   dataset = RuleReprDataset(base_dir, emb_model_type=args.emb_model_type, tokenizer=tokenizer)
   #for repo in os.listdir(base_dir):
   start, end = dataset.get_start_index(args.repo, start_offset=0, interval=0)
+  end = min(args.num_examples_to_test, end)
   print(args.repo, start, end)
   for batch, (rule_context_dct_lst, hole_info, repo_name) in enumerate(dataset):
      if batch > end:
