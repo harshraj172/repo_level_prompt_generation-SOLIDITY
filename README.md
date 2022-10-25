@@ -10,7 +10,7 @@ git clone https://github.com/JoranHonig/tree-sitter-solidity.git
 ## Code
 ### Data
 **Example**: 
-- Create a empty <ins>./data</ins> folder and clone below [paraspace](https://github.com/para-space/paraspace-core).
+- Create a empty <ins>./data</ins> folder and clone [paraspace](https://github.com/para-space/paraspace-core).
 
 **Use the below command:**
 ```
@@ -23,4 +23,4 @@ Run the bash script to get all the necessary scripts to run at once.
 ```
 bash job.sh
 ```
-- Now Download the .csv file generated to analyze the results.
+- Now Download the *eval-rlpg_prompt.csv* file generated to analyze the results.

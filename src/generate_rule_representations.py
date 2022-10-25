@@ -28,7 +28,7 @@ def setup_args():
   # model related hyperparameters
   parser.add_argument("--emb_model_type", type=str, default='codebert', help="model to obtain embedding from")
   parser.add_argument("--repo", type=str, default='jata4test', help="model to obtain embedding from")
-  parser.add_argument("--num_examples_to_test", default=15, help="# of samples to take for testing")
+  parser.add_argument("--num_examples_to_test", type=int, default=15, help="# of samples to take for testing")
   return parser.parse_args()
 
 def get_target_hole(hole_info):
