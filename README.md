@@ -10,7 +10,7 @@ git clone https://github.com/JoranHonig/tree-sitter-solidity.git
 ## Code
 ### Data
 **Example**: 
-- Create a empty <ins>./data</ins> folder and clone [paraspace](https://github.com/para-space/paraspace-core).
+- Create an empty <ins>./data</ins> folder and clone [paraspace](https://github.com/para-space/paraspace-core).
 
 **Use the below command:**
 ```
