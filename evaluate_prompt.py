@@ -6,7 +6,6 @@ from tqdm.auto import tqdm
 import argparse
 
 def gen_text(prompt):
-    time.sleep(30)
     response = openai.Completion.create(
       engine="code-davinci-002",
       prompt=prompt,
