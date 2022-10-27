@@ -4,6 +4,7 @@ Clone this repo:
 git clone https://github.com/harshraj172/repo_level_prompt_generation-SOLIDITY.git
 ```
 
+Install necessary libraries
 ```
 pip install tree-sitter
 pip install tqdm 
